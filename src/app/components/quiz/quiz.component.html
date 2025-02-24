@@ -1,0 +1,149 @@
+@if ( isLoading ) {
+<mat-card class="quiz-card">
+  <mat-card-header>
+    <mat-card-title
+      class="skeleton"
+      style="width: 120px; height: 28px; margin: 8px 0"
+    >
+      <span>&nbsp;</span>
+    </mat-card-title>
+    <mat-card-subtitle class="skeleton" style="width: 160px"
+      ><span>&nbsp;</span></mat-card-subtitle
+    >
+  </mat-card-header>
+  <mat-card-content>
+    <div
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <h3 style="margin: 0; padding: 12px 0; text-align: center">
+        {{ currentQuestionIndex + 1 }}.
+        <span class="skeleton"
+          ><span
+            >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span
+          ></span
+        >
+      </h3>
+      <button mat-stroked-button type="button" color="accent" [disabled]="true">
+        Skip
+      </button>
+    </div>
+
+    <div *ngFor="let option of [1, 2, 3, 4]; let i = index">
+      <button type="button" mat-stroked-button class="quiz-option">
+        <span style="display: flex; align-items: center">
+          {{ optionNumberDisplayNameMap[i + 1] }}.
+          <span class="skeleton w60">&nbsp;</span>
+        </span>
+      </button>
+    </div>
+  </mat-card-content>
+  <mat-card-actions style="display: flex; justify-content: space-between">
+    <button mat-raised-button [disabled]="currentQuestionIndex === 0">
+      Back
+    </button>
+    <button mat-raised-button color="primary" [disabled]="!selectedAnswer">
+      Next
+    </button>
+  </mat-card-actions>
+</mat-card>
+} @else {
+<mat-card class="quiz-card">
+  <mat-card-header>
+    <mat-card-title>
+      <span style="font-weight: 400">{{ quizDetails.topic | titlecase }} </span>
+      @if(quizDetails.subTopic) {
+      <span style="font-weight: 400">
+        | {{ quizDetails.subTopic | titlecase }}</span
+      >
+      }
+      <span style="font-weight: 400">
+        | {{ quizDetails.difficulty | titlecase }}</span
+      >
+      <span style="font-weight: 400"> MCQ Questions</span>
+    </mat-card-title>
+    @if(currentQuestionIndex < quizData.questions.length) {
+    <mat-card-subtitle
+      >Question {{ currentQuestionIndex + 1 }}
+      of
+      {{ quizData.questions.length }}</mat-card-subtitle
+    >}
+  </mat-card-header>
+  <mat-card-content>
+    @if(currentQuestionIndex === quizData.questions.length) {
+    <ng-container *ngTemplateOutlet="actionTemplate"></ng-container>
+    } @else {
+    <div
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <h3 style="margin: 0; padding: 12px 0; text-align: center">
+        {{ currentQuestionIndex + 1 }}.
+        {{ quizData.questions[currentQuestionIndex].question }}
+      </h3>
+      <button
+        mat-stroked-button
+        type="button"
+        color="accent"
+        (click)="nextQuestion()"
+      >
+        Skip
+      </button>
+    </div>
+
+    <div
+      *ngFor="
+        let option of quizData.questions[currentQuestionIndex].options;
+        let i = index
+      "
+    >
+      <app-quiz-option
+        [option]="option"
+        [optionNo]="i + 1"
+        [correctAnswer]="
+          quizData.questions[currentQuestionIndex].correct_answer
+        "
+        [selectedAnswer]="selectedAnswer"
+        (optionSelected)="handleOptionSelected($event)"
+      ></app-quiz-option>
+    </div>
+    }
+  </mat-card-content>
+  <mat-card-actions style="display: flex; justify-content: space-between">
+    <button
+      mat-raised-button
+      (click)="previousQuestion()"
+      [disabled]="currentQuestionIndex === 0"
+    >
+      Back
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="nextQuestion()"
+      [disabled]="!selectedAnswer"
+    >
+      Next
+    </button>
+  </mat-card-actions>
+</mat-card>
+}
+
+<ng-template #actionTemplate>
+  <div
+    style="
+      min-height: 240px;
+      display: grid;
+      grid-template-columns: auto auto;
+      place-items: center;
+    "
+  >
+    <button mat-stroked-button color="primary" (click)="loadMoreQuestions()">
+      Load More Questions
+    </button>
+    <button mat-raised-button color="primary" (click)="onSubmitQuiz()">
+      Submit Quiz
+    </button>
+  </div>
+</ng-template>

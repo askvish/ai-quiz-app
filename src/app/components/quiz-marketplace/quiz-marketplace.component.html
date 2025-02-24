@@ -1,0 +1,47 @@
+<div style="margin-bottom: 1rem">
+  <button mat-stroked-button color="primary" (click)="openBottomSheet()">
+    Create your own Quiz
+  </button>
+</div>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Quiz Marketplace</mat-card-title>
+  </mat-card-header>
+  <mat-card-content style="margin-top: 1rem;">
+    <div class="categories-container">
+      @for (item of quizCategories; track $index) {
+      <mat-expansion-panel
+        #expansionPanel
+        hideToggle
+        expanded
+        (closed)="expansionPanel.open()"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> {{ item.name }}</mat-panel-title>
+          <mat-panel-description>{{ item.description }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <div style="gap: 1rem">
+          @for (technology of item.technologies; track $index) {
+          <mat-card style="margin-bottom: 1rem">
+            <mat-card-header>
+              <mat-card-title>{{ technology }}</mat-card-title>
+              <mat-card-subtitle>{{ item.description }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions align="end">
+              <button
+                mat-stroked-button
+                (click)="onStartQuiz(technology)"
+                color="primary"
+              >
+                Start Quiz
+              </button>
+            </mat-card-actions>
+          </mat-card>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,41 @@
+<mat-toolbar class="header">
+  <div routerLink="/home">
+    <a class="logo" mat-button style="padding: 0 8px">Quiz App</a>
+    <div class="subtitle">by Ashok</div>
+  </div>
+
+  <span class="spacer"></span>
+  <button
+    mat-button
+    routerLink="/home"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+  >
+    Home
+  </button>
+  <!-- <button
+    mat-button
+    routerLink="/home/quiz"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+  >
+    Random Quiz
+  </button> -->
+  <button
+    mat-button
+    routerLink="/home/profile"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+  >
+    Profile
+  </button>
+  <!-- <button mat-stroked-button color="warn">Logout</button> -->
+</mat-toolbar>
+
+<div class="content">
+  <ng-content></ng-content>
+</div>
+
+<mat-toolbar class="footer">
+  <span>© 2025 Quiz App - by Ashok | All rights reserved.</span>
+</mat-toolbar>

@@ -1,0 +1,40 @@
+<mat-card
+  style="
+    margin: 20px;
+    padding: 15px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  "
+>
+  <div
+    style="display: flex; align-items: center; justify-content: space-between"
+  >
+    <h2>Create your own Quiz</h2>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Topic</mat-label>
+    <input matInput [(ngModel)]="quizTopic" required />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Sub Topic (Optional)</mat-label>
+    <input matInput [(ngModel)]="quizSubTopic" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" style="width: 200px">
+    <mat-label>Difficulty</mat-label>
+    <mat-select [(ngModel)]="selectedDifficulty" required>
+      <mat-option *ngFor="let difficulty of difficulties" [value]="difficulty">
+        {{ difficulty }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-card-actions align="end" style="gap: 1rem">
+    <button mat-stroked-button color="warn" (click)="close()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="createQuiz()">
+      Create
+    </button>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,14 @@
+.quiz-option {
+  display: block;
+  margin: 10px auto;
+  width: 100%;
+  height: max-content;
+  min-height: 42px;
+}
+
+.quiz-option.correct {
+  background: #4caf50;
+}
+.quiz-option.incorrect {
+  background: #f44336;
+}

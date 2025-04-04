@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuizService } from '../../shared/services/quiz.service';
 import { CommonModule } from '@angular/common';
@@ -6,8 +6,10 @@ import { Quiz } from './quiz.interface';
 import { optionNumberDisplayNameMap } from '../../shared/utils/utils';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { QuizOptionComponent } from '../quiz-option/quiz-option.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Subscription, interval } from 'rxjs';
 import { QuizDetails } from '../../shared/types/quiz-details.model';
 
 @Component({
@@ -16,13 +18,13 @@ import { QuizDetails } from '../../shared/types/quiz-details.model';
     CommonModule,
     MatCardModule,
     MatButtonModule,
-    MatIconModule,
+    MatProgressSpinnerModule,
     QuizOptionComponent,
   ],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.scss',
 })
-export default class QuizComponent implements OnInit {
+export default class QuizComponent implements OnInit, OnDestroy {
   quizData!: Quiz;
   currentQuestionIndex = 0;
   selectedAnswer: string | null = null;
@@ -36,9 +38,32 @@ export default class QuizComponent implements OnInit {
   activatedRoute = inject(ActivatedRoute);
   quizService = inject(QuizService);
 
+  breakpointObserver = inject(BreakpointObserver);
+  screenSize = 'desktop';
+
   quizDetails!: QuizDetails;
 
+  timerSubscription!: Subscription;
+  timeLeft: number = 60;
+
   ngOnInit() {
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XSmall,
+        Breakpoints.Small,
+        Breakpoints.Medium,
+        Breakpoints.Large,
+      ])
+      .subscribe((result) => {
+        if (result.breakpoints[Breakpoints.XSmall]) {
+          this.screenSize = 'mobile';
+        } else if (result.breakpoints[Breakpoints.Small]) {
+          this.screenSize = 'tablet';
+        } else {
+          this.screenSize = 'desktop';
+        }
+      });
+
     // Receive parameters without Observable
     let topic = this.activatedRoute.snapshot.paramMap.get('technology');
     this.activatedRoute.queryParams.subscribe((params) => {
@@ -54,6 +79,21 @@ export default class QuizComponent implements OnInit {
         this.getQuizQuestions(randomQuizDetails);
       }
     });
+
+    this.startTimer();
+  }
+
+  ngOnDestroy() {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+  }
+
+  formatQuestion(response: Quiz): void {
+    // Replace `code` with <code>code</code>
+    response.questions.forEach(
+      (q) => (q.question = q.question.replace(/`([^`]+)`/g, '<code>$1</code>'))
+    );
   }
 
   getQuizQuestions(quizDetails: QuizDetails, loadMore = false) {
@@ -61,6 +101,7 @@ export default class QuizComponent implements OnInit {
     this.quizService
       .getQuizQuestions(quizDetails, loadMore)
       .subscribe((response) => {
+        this.formatQuestion(response);
         this.quizData =
           this.quizData?.questions?.length > 0
             ? {
@@ -69,6 +110,7 @@ export default class QuizComponent implements OnInit {
               }
             : (response as Quiz);
         this.isLoading = false;
+        this.resetTimer(); // Reset timer for the next question
       });
   }
 
@@ -85,6 +127,7 @@ export default class QuizComponent implements OnInit {
     if (this.currentQuestionIndex >= this.quizData.questions.length) {
       this.hasMoreQuestions = false;
     }
+    this.resetTimer(); // Reset timer for the next question
   }
 
   loadMoreQuestions() {
@@ -105,10 +148,31 @@ export default class QuizComponent implements OnInit {
     if (this.currentQuestionIndex > 0) {
       this.selectedAnswer = null;
       this.currentQuestionIndex--;
+      this.resetTimer();
     }
   }
 
   handleOptionSelected(option: string) {
     this.selectedAnswer = option;
+  }
+
+  startTimer() {
+    this.timeLeft = 60;
+
+    this.timerSubscription = interval(1000).subscribe(() => {
+      this.timeLeft--;
+
+      if (this.timeLeft === 0) {
+        this.timerSubscription.unsubscribe();
+        this.nextQuestion(); // or auto-move to next question
+      }
+    });
+  }
+
+  resetTimer() {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+    this.startTimer();
   }
 }

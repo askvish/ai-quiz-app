@@ -1,8 +1,9 @@
 import { QuizDetails } from '../types/quiz-details.model';
 
-export const API_URL =
-  'https://api-inference.huggingface.co/models/google/gemma-2-2b-it';
-export const API_KEY = 'hf_xxx';
+// export const API_URL =
+//   'https://api-inference.huggingface.co/models/google/gemma-2-2b-it';
+export const API_URL = 'https://api.cohere.com/v2/chat';
+export const API_KEY = 'xxxxx'; // Replace with your actual API key
 
 /** Extract JSON from AI Response */
 export function extractJson(text: string): string {
@@ -46,15 +47,22 @@ export const optionNumberDisplayNameMap: Record<number, string> = {
 export function getRequestBody(
   quizDetails: QuizDetails,
   loadMoreQuestions: boolean
-): { inputs: string } {
+): {
+  messages: { role: string; content: string }[];
+  model: string;
+  temperature: number;
+} {
   const { topic, subTopic, difficulty } = quizDetails;
   return {
-    inputs: `Generate ${
-      loadMoreQuestions ? 'more and from different sub-topics,' : ''
-    }
+    messages: [
+      {
+        role: 'user',
+        content: `Generate ${
+          loadMoreQuestions ? 'more and from different sub-topics,' : ''
+        }
     5 multiple-choice quiz questions on "${topic}" ${
-      subTopic !== '' ? 'and of "${subTopic}"' : ''
-    } of difficulty "${difficulty}". in this JSON format:
+          subTopic !== '' ? 'and of "${subTopic}"' : ''
+        } of difficulty "${difficulty}". in this JSON format:
         {
           "topic": "${topic}",
           "questions": [
@@ -65,6 +73,10 @@ export function getRequestBody(
             }
           ]
         } and wrap the actual generated data between Response_Start and Response_End.`,
+      },
+    ],
+    model: 'command-a-03-2025',
+    temperature: 0.3,
   };
 }
 

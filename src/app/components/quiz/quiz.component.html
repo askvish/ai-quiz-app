@@ -1,5 +1,14 @@
 @if ( isLoading ) {
 <mat-card class="quiz-card">
+  <div style="position: relative">
+    <div class="overlay-spinner" style="height: 100%">
+      <mat-spinner
+        diameter="40"
+        color="primary"
+        mode="indeterminate"
+      ></mat-spinner>
+    </div>
+  </div>
   <mat-card-header>
     <mat-card-title
       class="skeleton"
@@ -22,9 +31,8 @@
             >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span
-          ></span
-        >
+          </span>
+        </span>
       </h3>
       <button mat-stroked-button type="button" color="accent" [disabled]="true">
         Skip
@@ -53,16 +61,43 @@
 <mat-card class="quiz-card">
   <mat-card-header>
     <mat-card-title>
-      <span style="font-weight: 400">{{ quizDetails.topic | titlecase }} </span>
-      @if(quizDetails.subTopic) {
-      <span style="font-weight: 400">
-        | {{ quizDetails.subTopic | titlecase }}</span
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
       >
-      }
-      <span style="font-weight: 400">
-        | {{ quizDetails.difficulty | titlecase }}</span
-      >
-      <span style="font-weight: 400"> MCQ Questions</span>
+        <div>
+          <span style="font-weight: 400"
+            >{{ quizDetails.topic | titlecase }}
+          </span>
+          @if(quizDetails.subTopic) {
+          <span style="font-weight: 400">
+            | {{ quizDetails.subTopic | titlecase }}</span
+          >
+          }
+          <span style="font-weight: 400">
+            | {{ quizDetails.difficulty | titlecase }}</span
+          >
+          <span style="font-weight: 400"> MCQ Questions</span>
+        </div>
+        @if (currentQuestionIndex < quizData.questions.length) { @if (screenSize
+        === 'mobile') {
+        <span style="font-size: smaller; width: 130px"
+          >Time left: {{ timeLeft }} s</span
+        >
+        }@else {
+        <span style="font-size: medium"
+          >Time left:
+          <span [ngClass]="timeLeft <= 10 ? 'text-red' : ''">{{
+            timeLeft
+          }}</span>
+          seconds</span
+        >
+        } }
+      </div>
     </mat-card-title>
     @if(currentQuestionIndex < quizData.questions.length) {
     <mat-card-subtitle
@@ -78,10 +113,15 @@
     <div
       style="display: flex; align-items: center; justify-content: space-between"
     >
-      <h3 style="margin: 0; padding: 12px 0; text-align: center">
-        {{ currentQuestionIndex + 1 }}.
-        {{ quizData.questions[currentQuestionIndex].question }}
-      </h3>
+      <h3
+        style="margin: 0; padding: 12px 0; text-align: center"
+        [innerHTML]="
+          currentQuestionIndex +
+          1 +
+          '. ' +
+          quizData.questions[currentQuestionIndex].question
+        "
+      ></h3>
       <button
         mat-stroked-button
         type="button"
@@ -131,6 +171,8 @@
 }
 
 <ng-template #actionTemplate>
+  <h2>Quiz Completed!</h2>
+  <p>Your Score: {{ score }} / {{ quizData.questions.length }}</p>
   <div
     style="
       min-height: 240px;

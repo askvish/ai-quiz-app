@@ -57,12 +57,12 @@ export class QuizService {
     const requestBody = getRequestBody(quizDetails, loadMoreQuestions);
 
     return this.http
-      .post<ResponseModel[]>(this.apiUrl, requestBody, { headers })
+      .post<ResponseModel>(this.apiUrl, requestBody, { headers })
       .pipe(
         map((response) => {
           try {
             // Extract and parse JSON response
-            const rawText = response[0].generated_text;
+            const rawText = response.message.content[0].text;
             const jsonText = extractJson(rawText);
             const quizData = JSON.parse(jsonText) as Quiz;
 

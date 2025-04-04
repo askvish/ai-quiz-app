@@ -34,3 +34,25 @@
     background-position: -200% 0;
   }
 }
+
+.mat-mdc-card-header {
+  display: block !important;
+}
+
+.overlay-spinner {
+  position: absolute;
+  top: 180px;
+  left: 0;
+  right: 0;
+
+  background-color: rgba(255, 255, 255, 0.6); /* semi-transparent white */
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-red {
+  color: red;
+}

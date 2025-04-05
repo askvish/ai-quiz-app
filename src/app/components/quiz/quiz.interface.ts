@@ -1,5 +1,7 @@
 export interface Quiz {
   topic: string;
+  subTopic: string;
+  difficulty: string;
   questions: Question[];
 }
 

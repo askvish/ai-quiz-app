@@ -58,11 +58,11 @@ export function getRequestBody(
       {
         role: 'user',
         content: `Generate ${
-          loadMoreQuestions ? 'more and from different sub-topics,' : ''
+          loadMoreQuestions ? 'new and increase difficulty and area,' : ''
         }
-    5 multiple-choice quiz questions on "${topic}" ${
-          subTopic !== '' ? 'and of "${subTopic}"' : ''
-        } of difficulty "${difficulty}". in this JSON format:
+          5 multiple-choice quiz questions on "${topic}"
+          ${subTopic !== '' ? 'and of subTopic "' + subTopic + '"' : ''}
+          of difficulty "${difficulty}" that may be asked in an interview in the below JSON format:
         {
           "topic": "${topic}",
           "questions": [

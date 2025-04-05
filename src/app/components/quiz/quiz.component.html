@@ -85,7 +85,7 @@
         </div>
         @if (currentQuestionIndex < quizData.questions.length) { @if (screenSize
         === 'mobile') {
-        <span style="font-size: smaller; width: 130px"
+        <span style="font-size: smaller; width: 132px"
           >Time left: {{ timeLeft }} s</span
         >
         }@else {
@@ -99,12 +99,30 @@
         } }
       </div>
     </mat-card-title>
-    @if(currentQuestionIndex < quizData.questions.length) {
-    <mat-card-subtitle
-      >Question {{ currentQuestionIndex + 1 }}
-      of
-      {{ quizData.questions.length }}</mat-card-subtitle
-    >}
+    <mat-card-subtitle>
+      @if(currentQuestionIndex < quizData.questions.length) {
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        Question
+        {{ currentQuestionIndex + 1 }}
+        of
+        {{ quizData.questions.length }}
+        <button
+          mat-stroked-button
+          type="button"
+          color="accent"
+          (click)="nextQuestion()"
+        >
+          Skip
+        </button>
+      </div>
+      }
+    </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     @if(currentQuestionIndex === quizData.questions.length) {
@@ -117,19 +135,11 @@
         style="margin: 0; padding: 12px 0; text-align: center"
         [innerHTML]="
           currentQuestionIndex +
-          1 +
-          '. ' +
-          quizData.questions[currentQuestionIndex].question
+            1 +
+            '. ' +
+            quizData.questions[currentQuestionIndex].question | unicodeDecode
         "
       ></h3>
-      <button
-        mat-stroked-button
-        type="button"
-        color="accent"
-        (click)="nextQuestion()"
-      >
-        Skip
-      </button>
     </div>
 
     <div
@@ -167,6 +177,10 @@
       Next
     </button>
   </mat-card-actions>
+  <mat-progress-bar
+    mode="determinate"
+    [value]="((currentQuestionIndex + 1) * 100) / quizData.questions.length"
+  ></mat-progress-bar>
 </mat-card>
 }
 

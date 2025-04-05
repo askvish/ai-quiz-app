@@ -8,9 +8,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { QuizOptionComponent } from '../quiz-option/quiz-option.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription, interval } from 'rxjs';
 import { QuizDetails } from '../../shared/types/quiz-details.model';
+import { UnicodeDecodePipe } from '../../shared/pipe/unicode-decode.pipe';
 
 @Component({
   selector: 'app-quiz',
@@ -19,7 +21,9 @@ import { QuizDetails } from '../../shared/types/quiz-details.model';
     MatCardModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     QuizOptionComponent,
+    UnicodeDecodePipe,
   ],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.scss',
@@ -74,7 +78,7 @@ export default class QuizComponent implements OnInit, OnDestroy {
         const randomQuizDetails = {
           topic: 'Angular',
           subTopic: '',
-          difficulty: 'easy',
+          difficulty: 'Easy',
         };
         this.getQuizQuestions(randomQuizDetails);
       }
@@ -89,19 +93,11 @@ export default class QuizComponent implements OnInit, OnDestroy {
     }
   }
 
-  formatQuestion(response: Quiz): void {
-    // Replace `code` with <code>code</code>
-    response.questions.forEach(
-      (q) => (q.question = q.question.replace(/`([^`]+)`/g, '<code>$1</code>'))
-    );
-  }
-
   getQuizQuestions(quizDetails: QuizDetails, loadMore = false) {
     this.isLoading = true;
     this.quizService
       .getQuizQuestions(quizDetails, loadMore)
       .subscribe((response) => {
-        this.formatQuestion(response);
         this.quizData =
           this.quizData?.questions?.length > 0
             ? {
@@ -119,7 +115,7 @@ export default class QuizComponent implements OnInit, OnDestroy {
       this.selectedAnswer ===
       this.quizData.questions[this.currentQuestionIndex].correct_answer
     ) {
-      this.score++;
+      this.score = Math.min(this.score + 1, this.quizData.questions.length);
     }
     this.selectedAnswer = null;
     this.currentQuestionIndex++;
@@ -133,8 +129,8 @@ export default class QuizComponent implements OnInit, OnDestroy {
   loadMoreQuestions() {
     const quizDetails = {
       topic: this.quizData.topic,
-      subTopic: '',
-      difficulty: 'medium',
+      subTopic: this.quizData.subTopic,
+      difficulty: this.quizData.difficulty,
     };
     this.getQuizQuestions(quizDetails, true);
   }
